@@ -1,4 +1,8 @@
 pipeline {
+    environment {
+        GOPATH = "$WORKSPACE/gopath/bin"
+        PATH = "$GOPATH/bin:$PATH"
+    }
     agent {
         docker {
             image 'maven:3-alpine' 
