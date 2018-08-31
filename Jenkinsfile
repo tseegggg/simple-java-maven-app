@@ -1,18 +1,25 @@
 pipeline {
-    environment {
-        GOPATH = "$WORKSPACE/gopath/bin"
-        PATH = "$GOPATH/bin:$PATH"
-    }
-    agent {
-        docker {
-            image 'maven:3-alpine' 
-            args '-v /root/.m2:/root/.m2' 
-        }
-    }
+    agent any
+   
     stages {
-        stage('Build') { 
+        stage('Build') {
             steps {
-                bat 'mvn -B -DskipTests clean package' 
+                cmd 'mvn -B -DskipTests clean package'
+            }
+        }
+        stage('Test') {
+            steps {
+                cmd 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        stage('Deliver') {
+            steps {
+                cmd './jenkins/scripts/deliver.sh'
             }
         }
     }
